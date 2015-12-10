@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Game"
+    android:id="@+id/activity_game"
+    >
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonUp"
+        android:src="@drawable/up"
+        android:layout_above="@+id/imageButtonCenter"
+        android:layout_toLeftOf="@+id/imageButtonRight"
+        android:layout_toStartOf="@+id/imageButtonRight"
+        android:visibility="visible" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonLeft"
+        android:src="@drawable/left"
+        android:layout_above="@+id/imageButtonDown"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonCenter"
+        android:src="@drawable/steelbutton"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/imageButtonLeft"
+        android:layout_toEndOf="@+id/imageButtonLeft"
+        android:clickable="false" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonDown"
+        android:layout_below="@+id/imageButtonCenter"
+        android:layout_toLeftOf="@+id/imageButtonRight"
+        android:layout_toStartOf="@+id/imageButtonRight"
+        android:src="@drawable/down"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonRight"
+        android:layout_alignTop="@+id/imageButtonCenter"
+        android:layout_toRightOf="@+id/imageButtonCenter"
+        android:layout_toEndOf="@+id/imageButtonCenter"
+        android:src="@drawable/right"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonShoot"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/shoot"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="One Player Game"
+        android:id="@+id/onePlayerButton"
+        android:layout_above="@+id/imageButtonDown"
+        android:layout_centerHorizontal="true"
+        android:nestedScrollingEnabled="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Two Player Game"
+        android:id="@+id/twoPlayerButton"
+        android:layout_alignTop="@+id/imageButtonDown"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Online"
+        android:id="@+id/onlineButton"
+        android:layout_below="@+id/twoPlayerButton"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButtonPause"
+        android:layout_alignBottom="@+id/imageButtonShoot"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/imageButtonRight"
+        android:layout_toStartOf="@+id/imageButtonRight"
+        android:layout_below="@+id/onlineButton" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stage 1"
+        android:id="@+id/textViewStage"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="T"
+        android:id="@+id/playerLocationView"
+        android:layout_below="@+id/textViewStage"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>
