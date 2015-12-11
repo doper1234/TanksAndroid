@@ -8,8 +8,8 @@ import android.widget.ImageView;
  */
 public class Player extends Actor{
 
-    public Player(Game game, float x, float y, int... imageResources){
-        super(game, x, y, imageResources);
+    public Player(Game game, float x, float y, byte playerNumber, int... imageResources){
+        super(game, x, y, playerNumber, imageResources);
     }
 
 

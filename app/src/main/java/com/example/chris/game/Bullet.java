@@ -15,8 +15,8 @@ public class Bullet extends Actor{
 
 
 
-    public Bullet(Game game, float x, float y, int... imageResources){
-        super(game, x, y, imageResources);
+    public Bullet(Game game, float x, float y, byte playerNumber, int... imageResources){
+        super(game, x, y, playerNumber, imageResources);
         speed = 2;
         if(game.p1.isUp){
             BULLET_DIRECTION = UP;

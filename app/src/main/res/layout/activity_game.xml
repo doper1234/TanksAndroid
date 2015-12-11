@@ -118,4 +118,13 @@
         android:layout_below="@+id/textViewStage"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ipText"
+        android:layout_alignBottom="@+id/imageButtonShoot"
+        android:layout_toLeftOf="@+id/imageButtonShoot"
+        android:layout_alignLeft="@+id/onePlayerButton"
+        android:layout_alignStart="@+id/onePlayerButton" />
 </RelativeLayout>

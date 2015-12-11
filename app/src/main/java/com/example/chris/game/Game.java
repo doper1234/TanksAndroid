@@ -10,14 +10,18 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,7 +44,7 @@ public class Game extends Activity {
     private float resolution = 2.5f;
     ImageButton upBtn, downBtn, leftBtn, rightBtn, centerBtn, shootBtn, pauseBtn;
     boolean up, down, left, right, pause, shoot;
-    Player p1;
+    Player p1, p2;
     int p1X;// = (int)(p1.getX() + 76)/12;//13 min -76
     int p1Y;//= (int)(p1.getY() - 56)/12;//13 min 52
     ImageView stageScreenTop, stageScreenBottom;
@@ -50,6 +54,15 @@ public class Game extends Activity {
     private ArrayList<Bullet> bullets;
     MediaPlayer mp;
     int[][] mapGrid;
+
+    Socket connectToServer;
+    BufferedReader reader;
+    PrintWriter writer;
+    Thread readerThread;
+    EditText ipText;
+    String ip = "192.168.1.108";
+    boolean connected = false;
+    byte playerNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +94,8 @@ public class Game extends Activity {
 
     private void setButtons(){
         bullets = new ArrayList<>();
+        ipText = (EditText) findViewById(R.id.ipText);
+        ipText.setText(ip);
         textViewStage = (TextView) findViewById(R.id.textViewStage);
         textViewStage.setText("Stage " + mapNumber);
         textViewStage.setVisibility(View.INVISIBLE);
@@ -159,7 +174,7 @@ public class Game extends Activity {
             @Override
             public void onClick(View v) {
                 if(bullets.isEmpty()) {
-                    Bullet b = new Bullet(Game.this, p1.getX() - (grid + grid/2), p1.getY() - (grid * 2), R.drawable.bullet);
+                    Bullet b = new Bullet(Game.this, p1.getX() - (grid + grid/2), p1.getY() - (grid * 2), (byte)1, R.drawable.bullet);
                     bullets.add(b);
                     rl.addView(b.spriteFrame, lp);
                     MediaPlayer mediaPlayer= MediaPlayer.create(Game.this, R.raw.shoot);
@@ -205,8 +220,18 @@ public class Game extends Activity {
         startOnlineGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setControllerButtonsVisible();
-                setupTanksPlayArea();
+
+                //connectToServer();
+                ip = ipText.getText().toString();
+                readerThread = new Thread(new IncomingReader());
+                readerThread.start();
+                if(connected){
+                    setControllerButtonsVisible();
+                    setupTanksPlayArea();
+                    startTimer();
+                }
+
+
 
             }
         });
@@ -214,6 +239,7 @@ public class Game extends Activity {
 
     private void setControllerButtonsVisible(){
         textViewStage.setVisibility(View.VISIBLE);
+        ipText.setVisibility(View.INVISIBLE);
         upBtn.setVisibility(View.VISIBLE);
         downBtn.setVisibility(View.VISIBLE);
         leftBtn.setVisibility(View.VISIBLE);
@@ -400,10 +426,26 @@ public class Game extends Activity {
                 }else if(mapGrid[i][j] == 6) {
                     mapTerrainView.setImageResource(R.drawable.ice);
                 } else if(mapGrid[i][j] == 8){
-                    p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, R.drawable.p1);
+                    if(playerNumber == 1){
+
+                        p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1 , R.drawable.p1);
+                        p2 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)2, R.drawable.p2);
+                    }else if (playerNumber == 2){
+                        p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)2 , R.drawable.p1);
+                        p2 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1, R.drawable.p2);
+                    }else{
+                        p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1 , R.drawable.p1);
+                    }
+
                     p1.spriteFrame.setScaleX(resolution*2);
                     p1.spriteFrame.setScaleY(resolution * 2);
                     rl.addView(p1.spriteFrame, 0, lp);
+                    if(p2 != null){
+                        p2.spriteFrame.setScaleX(resolution*2);
+                        p2.spriteFrame.setScaleY(resolution * 2);
+                        rl.addView(p2.spriteFrame, 0, lp);
+                    }
+
                     p1X = (int)(p1.getX() + 76)/12;//13 min -76
                     p1Y = (int)(p1.getY() - 56)/12;//13 min 52
                 }
@@ -618,6 +660,77 @@ public class Game extends Activity {
         float x = p1.getX();
         float y = p1.getY();
         return true;
+    }
+
+    public void connectToServer(){
+            try {
+                connectToServer = new Socket("192.168.1.108", 3074);
+                InputStreamReader streamReader = new InputStreamReader(connectToServer.getInputStream());
+                reader = new BufferedReader(streamReader);
+                writer = new PrintWriter(connectToServer.getOutputStream());
+                writer.println("Hello from Android!");
+                writer.flush();
+                connected = true;
+
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Log.e("Error", "something happened maybe disconnected from server");
+                //JOptionPane.showMessageDialog(null, "Error: disconnected from the server");
+            }
+
+
+    }
+
+    public class IncomingReader implements Runnable {
+
+        @Override
+        public void run() {
+            String message;
+
+            connectToServer();
+
+            if(reader!= null) {
+                while(true) {
+                    try {
+
+                        while ((message = reader.readLine()) != null) {
+
+                            Log.e(message, " from server");
+                            String[] result = reader.readLine().split(",");
+                            if(result.length <=0){
+                                playerNumber = Byte.parseByte(result[0]);
+                            } else{
+                                handleOtherPlayerMovement(Byte.parseByte(result[0]),Byte.parseByte(result[1]));
+                            }
+
+
+                        }
+                    } catch (IOException | NumberFormatException ex) {
+                        ex.printStackTrace();
+
+                    }
+                }
+            }
+        }
+
+        private void handleOtherPlayerMovement(byte player,byte movement){
+            Player p;
+            if(player == 1){
+                p = p1;
+            }else{
+                p = p2;
+            }
+            if(movement == Actor.UP){
+               p.goUp();
+            }else if(movement == Actor.DOWN){
+                p.goDown();
+            }else if(movement == Actor.LEFT){
+                p.goLeft();
+            }else{
+                p.goRight();
+            }
+        }
     }
 
 
