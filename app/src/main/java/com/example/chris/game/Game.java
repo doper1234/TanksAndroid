@@ -3,6 +3,7 @@ package com.example.chris.game;
 import android.app.Activity;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,9 @@ import java.util.TimerTask;
 
 public class Game extends Activity {
 
+    Display display;
+    float width;
+    float height;
     int thing = 26;
     int gameX = -100;
     int gameY = 32;
@@ -44,7 +48,7 @@ public class Game extends Activity {
     private float resolution = 2.5f;
     ImageButton upBtn, downBtn, leftBtn, rightBtn, centerBtn, shootBtn, pauseBtn;
     boolean up, down, left, right, pause, shoot;
-    Player p1, p2;
+    Player p1, p2, pMe;
     int p1X;// = (int)(p1.getX() + 76)/12;//13 min -76
     int p1Y;//= (int)(p1.getY() - 56)/12;//13 min 52
     ImageView stageScreenTop, stageScreenBottom;
@@ -60,8 +64,9 @@ public class Game extends Activity {
     PrintWriter writer;
     Thread readerThread;
     EditText ipText;
-    String ip = "192.168.1.108";
+    String ip = "172.16.32.158";
     boolean connected = false;
+    boolean initializing = true;
     byte playerNumber;
 
     @Override
@@ -85,6 +90,10 @@ public class Game extends Activity {
         stageScreenY = start1PGameButton.getX();
         mp = MediaPlayer.create(this, R.raw.move);
 
+        display = getWindowManager().getDefaultDisplay();
+        width = display.getWidth();
+        height = display.getHeight();
+
 
 
 
@@ -106,7 +115,7 @@ public class Game extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                p1.goUp();
+                pMe.goUp();
                 if (!mp.isPlaying()) {
                     mp.start();
                 }
@@ -123,7 +132,20 @@ public class Game extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                p1.goDown();
+                pMe.goDown();
+                if (!mp.isPlaying()) {
+                    mp.start();
+                }
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    mp.pause();
+                }
+                return event.getDeviceId() == R.id.imageButtonUp;
+            }
+        });
+        downBtn.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                pMe.goDown();
                 if (!mp.isPlaying()) {
                     mp.start();
                 }
@@ -139,7 +161,7 @@ public class Game extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                p1.goLeft();
+                pMe.goLeft();
                 if (!mp.isPlaying()) {
                     mp.start();
                 }
@@ -155,7 +177,7 @@ public class Game extends Activity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
-                p1.goRight();
+                pMe.goRight();
                 if (!mp.isPlaying()) {
                     mp.start();
                 }
@@ -174,7 +196,7 @@ public class Game extends Activity {
             @Override
             public void onClick(View v) {
                 if(bullets.isEmpty()) {
-                    Bullet b = new Bullet(Game.this, p1.getX() - (grid + grid/2), p1.getY() - (grid * 2), (byte)1, R.drawable.bullet);
+                    Bullet b = new Bullet(Game.this, pMe.getX() - (grid + grid/2), pMe.getY() - (grid * 2), (byte)1, R.drawable.bullet);
                     bullets.add(b);
                     rl.addView(b.spriteFrame, lp);
                     MediaPlayer mediaPlayer= MediaPlayer.create(Game.this, R.raw.shoot);
@@ -225,11 +247,11 @@ public class Game extends Activity {
                 ip = ipText.getText().toString();
                 readerThread = new Thread(new IncomingReader());
                 readerThread.start();
-                if(connected){
+                //if(connected){
                     setControllerButtonsVisible();
                     setupTanksPlayArea();
                     startTimer();
-                }
+                //}
 
 
 
@@ -311,9 +333,32 @@ public class Game extends Activity {
     }
     private void setupTanksPlayArea(){
 
-        resolution = 1.5f;
-        grid = resolution*8;
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        Display display = getWindowManager().getDefaultDisplay();
+//        float width = display.getWidth();
+//        float height = display.getHeight();
+        //textViewStage.setText(size + " size" + stageWidth +", " + stageHeight);
 
+        if(width <=800) {
+
+            resolution = 0.9f;
+            grid = resolution * 16f;
+        } else{
+
+            resolution = 1.5f; //needs to be set based on screen size, for emulator 1, tablet 1.5
+            grid = resolution * 8; // also needs to be set based on screen size, for emulator *16, tablet *8, res + 1.6
+        }
+
+        if(Build.VERSION.SDK_INT <= 15){
+             //needs to be set based on screen size, for emulator 1, tablet 1.5
+            //grid = resolution * 8; // also needs to be set based on screen size, for emulator *16, tablet *8, res + 1.6
+            resolution = 1.8f; //needs to be set based on screen size, for emulator 1, tablet 1.5
+            grid = resolution * 8; // also needs to be set based on screen size, for emulator *16, tablet *8, res + 1.6
+        }
+
+        textViewStage.setText("API " +Build.VERSION.SDK_INT);
         startNewStageAnimation();
         //getMap();
 
@@ -344,11 +389,14 @@ public class Game extends Activity {
     }
 
     private void setupMap(){
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int x = gameX;
-        int y = gameY;
+
+        int x = (int)width/2 -(int)(1.5 * grid*26);
+        //int x = gameX;
+        //int y = gameY;
+        int y = (int)(grid * 1.5);
+        gameX = x;
+        gameY = y;
+
         //map = new Map(1);
         //int[][] mapGrid = getMap1();
         mapGrid = getMap(mapNumber);
@@ -429,12 +477,15 @@ public class Game extends Activity {
                     if(playerNumber == 1){
 
                         p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1 , R.drawable.p1);
-                        p2 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)2, R.drawable.p2);
+                        p2 = new Player(this,(x + grid) + j * grid, (y + grid) + i * grid, (byte)2, R.drawable.p2);
+                        pMe = p1;
                     }else if (playerNumber == 2){
                         p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)2 , R.drawable.p1);
-                        p2 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1, R.drawable.p2);
+                        p2 = new Player(this,(x + grid) + j * grid, (y + grid) + i * grid, (byte)1, R.drawable.p2);
+                        pMe = p1;
                     }else{
                         p1 = new Player(this,(x + grid/2) + j * grid, (y + grid/2) + i * grid, (byte)1 , R.drawable.p1);
+                        pMe = p1;
                     }
 
                     p1.spriteFrame.setScaleX(resolution*2);
@@ -612,7 +663,7 @@ public class Game extends Activity {
 
                         int x = (int)(p1.getX() + 76)/12;//13 min -76
                         int y = (int)(p1.getY() - 56)/12;//13 min 52
-                        playerLocationView.setText(x +"," + y + " " + mapGrid[x][y]);
+                       // playerLocationView.setText(x +"," + y + " " + mapGrid[x][y]);
                         for(Bullet b:bullets){
                             if(b.getBulletDirection() == Bullet.UP){
                                 b.goUp();
@@ -641,10 +692,21 @@ public class Game extends Activity {
     }
 
     public boolean canMoveForward(){
-//        int x = (int)p1.getX()/26;
-//        int y = (int)p1.getY()/26;
-        Log.e("", p1X + "," + p1Y);
-        return mapGrid[p1X][p1Y - 1] != 0 || mapGrid[p1X][p1Y - 1] != 3;
+        int x;
+        int y;
+//        if(Build.VERSION.SDK_INT <=15){
+//            x = (int)(p1.getX() + 132)/13;//207
+//            y = (int)(p1.getY() -47)/15;//387
+//        }else{
+            x = (int)((p1.getX() +132)/13.5);
+            y = (int)((p1.getY() -49)/13.5);
+        //}
+        //boolean b =  mapGrid[y][x - 1] == 0;
+        //Log.e("", p1X + "," + p1Y);
+        playerLocationView.setText("XLoc" + x + ", YLoc" + y+ " " + mapGrid[y][x - 1] + " " +  "");
+        //return mapGrid[p1X][p1Y - 1] != 0 || mapGrid[p1X][p1Y - 1] != 3;
+        //return mapGrid[x][y - 1] == 0 || mapGrid[x][y - 1] == 3;
+        return true;
     }
     public boolean canMoveBackward(){
         float x = p1.getX();
@@ -664,13 +726,14 @@ public class Game extends Activity {
 
     public void connectToServer(){
             try {
-                connectToServer = new Socket("192.168.1.108", 3074);
+                connectToServer = new Socket(ip, 3074);
+                //connected = true;
                 InputStreamReader streamReader = new InputStreamReader(connectToServer.getInputStream());
                 reader = new BufferedReader(streamReader);
                 writer = new PrintWriter(connectToServer.getOutputStream());
                 writer.println("Hello from Android!");
                 writer.flush();
-                connected = true;
+
 
 
             } catch (Exception ex) {
@@ -696,13 +759,23 @@ public class Game extends Activity {
 
                         while ((message = reader.readLine()) != null) {
 
-                            Log.e(message, " from server");
-                            String[] result = reader.readLine().split(",");
-                            if(result.length <=0){
+                            Log.e("Got player number?", message + " from server. Player number should be " + message);
+
+
+                            String[] result = message.split(",");
+                            if(initializing == true) {
                                 playerNumber = Byte.parseByte(result[0]);
-                            } else{
-                                handleOtherPlayerMovement(Byte.parseByte(result[0]),Byte.parseByte(result[1]));
+                                initializing = false;
+                                Log.e("Got player number?", playerNumber + "player number");
                             }
+                            //if(result.length == 1){
+                              //  playerNumber = Byte.parseByte(result[0]);
+                            //} else{
+                            if(result.length < 1) {
+                                handleOtherPlayerMovement(Byte.parseByte(result[0]), Byte.parseByte(result[1]));
+                            }
+                            //}
+
 
 
                         }
@@ -715,20 +788,23 @@ public class Game extends Activity {
         }
 
         private void handleOtherPlayerMovement(byte player,byte movement){
-            Player p;
-            if(player == 1){
-                p = p1;
-            }else{
-                p = p2;
-            }
-            if(movement == Actor.UP){
-               p.goUp();
-            }else if(movement == Actor.DOWN){
-                p.goDown();
-            }else if(movement == Actor.LEFT){
-                p.goLeft();
-            }else{
-                p.goRight();
+
+            if(player != playerNumber) {
+                Player p;
+                if (player == 1) {
+                    p = p1;
+                } else {
+                    p = p2;
+                }
+                if (movement == Actor.UP) {
+                    p.goUp();
+                } else if (movement == Actor.DOWN) {
+                    p.goDown();
+                } else if (movement == Actor.LEFT) {
+                    p.goLeft();
+                } else {
+                    p.goRight();
+                }
             }
         }
     }

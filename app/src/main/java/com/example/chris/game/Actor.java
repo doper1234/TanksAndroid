@@ -16,7 +16,7 @@ abstract class Actor {
     ImageView spriteFrame;
     float x,y;
     int up, down, left, right;
-    int speed = 1;
+    int speed = 2;
     final int xBoundsMax;
     final int yBoundsMax;
     final int xBoundsMin;
@@ -42,6 +42,7 @@ abstract class Actor {
         yBoundsMax = (int)(game.gameY + (26*game.grid));
 
 
+
     }
 
     abstract void collide();
@@ -49,7 +50,7 @@ abstract class Actor {
     public void goUp(){
 
         if(game.writer !=null){
-            game.writer.println(UP);
+            game.writer.println(playerNumber + "," + UP);
             game.writer.flush();
         }
         if(up == 0){
@@ -60,7 +61,12 @@ abstract class Actor {
             spriteFrame.setRotationX(0);
             spriteFrame.setRotationY(0);
         }
-        if(spriteFrame.getY() > yBoundsMin && game.canMoveForward() == true) {
+        if(game.canMoveForward()){
+            speed = 2;
+        }else{
+            speed = 0;
+        }
+        if(spriteFrame.getY() > yBoundsMin && game.canMoveForward()) {
                spriteFrame.setY(spriteFrame.getY() - speed);
 
         }else{
@@ -70,6 +76,7 @@ abstract class Actor {
 
     }
     public void goDown(){
+
         if(down == 0){
 
             if(game.writer !=null){
@@ -92,6 +99,7 @@ abstract class Actor {
 
     }
     public void goLeft(){
+        speed = 2;
         if(left == 0) {
             if(game.writer !=null){
                 game.writer.println(LEFT);
@@ -112,6 +120,7 @@ abstract class Actor {
         left++;
     }
     public void goRight(){
+        speed = 2;
         if(right == 0) {
             if(game.writer !=null){
                 game.writer.println(RIGHT);
