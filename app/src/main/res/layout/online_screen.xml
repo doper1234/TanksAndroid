@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Start Online Game"
+        android:id="@+id/startOnlineGameView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Player 1"
+        android:id="@+id/player1View"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="not connected"
+        android:id="@+id/player1IPView"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Player 2"
+        android:id="@+id/player2View"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="not connected"
+        android:id="@+id/player2IPView"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="137dp"
+        android:layout_height="wrap_content"
+        android:text="Connect to server"
+        android:id="@+id/connectToServerButton"
+        android:longClickable="false"
+        android:nestedScrollingEnabled="false"
+        android:background="#953131"
+        android:layout_weight="0.16" />
+
+    <Button
+        android:layout_width="134dp"
+        android:layout_height="wrap_content"
+        android:text="Start Game"
+        android:id="@+id/startGameButton"
+        android:enabled="false"
+        android:focusable="true" />
+
+    <Button
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/cancelButton" />
+
+</LinearLayout>

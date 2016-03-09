@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Game</string>
+    <string name="titlename1">BATTLE</string>
+    <string name="titlename2">CITY</string>
+    <string name="ipstring">IP will go here</string>
 </resources>

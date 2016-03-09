@@ -6,6 +6,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Game"
     android:id="@+id/activity_game"
+    android:background="@color/colorBack"
     >
 
 
@@ -69,37 +70,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="One Player Game"
+        android:background="@color/colorBack"
+        android:textColor="@color/buttonColor"
+        android:textSize="@dimen/button_size"
         android:id="@+id/onePlayerButton"
-        android:layout_above="@+id/imageButtonDown"
-        android:layout_centerHorizontal="true"
-        android:nestedScrollingEnabled="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Two Player Game"
-        android:id="@+id/twoPlayerButton"
-        android:layout_alignTop="@+id/imageButtonDown"
+        android:nestedScrollingEnabled="true"
+        android:layout_below="@+id/cityLabel"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/colorBack"
+        android:textColor="@color/buttonColor"
+        android:textSize="@dimen/button_size"
         android:text="Online"
         android:id="@+id/onlineButton"
-        android:layout_below="@+id/twoPlayerButton"
+        android:layout_below="@+id/onePlayerButton"
         android:layout_centerHorizontal="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageButtonPause"
-        android:layout_alignBottom="@+id/imageButtonShoot"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/imageButtonRight"
         android:layout_toStartOf="@+id/imageButtonRight"
-        android:layout_below="@+id/onlineButton" />
+        android:layout_below="@+id/onePlayerButton"
+        android:layout_alignBottom="@+id/imageButtonShoot" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -119,12 +118,87 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ipText"
-        android:layout_alignBottom="@+id/imageButtonShoot"
-        android:layout_toLeftOf="@+id/imageButtonShoot"
-        android:layout_alignLeft="@+id/onePlayerButton"
-        android:layout_alignStart="@+id/onePlayerButton" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/titlename1"
+        android:id="@+id/battleLabel"
+        android:layout_alignTop="@+id/textViewStage"
+        android:textSize="@dimen/title_size"
+        android:textStyle="bold"
+        android:textColor="@color/titleColor"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/titlename2"
+        android:textColor="@color/titleColor"
+        android:textSize="@dimen/title_size"
+        android:textStyle="bold"
+        android:id="@+id/cityLabel"
+        android:singleLine="false"
+        android:layout_below="@+id/battleLabel"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Player 1 "
+        android:id="@+id/player1View"
+        android:layout_alignBottom="@+id/imageButtonDown"
+        android:layout_toLeftOf="@+id/player1ImageView"
+        android:layout_toStartOf="@+id/player1ImageView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Player 2 "
+        android:id="@+id/player2View"
+        android:layout_alignBottom="@+id/player2ImageView"
+        android:layout_alignLeft="@+id/player1View"
+        android:layout_alignStart="@+id/player1View" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="not connected"
+        android:id="@+id/player1IPView"
+        android:layout_alignTop="@+id/player1View"
+        android:layout_alignLeft="@+id/player2IPView"
+        android:layout_alignStart="@+id/player2IPView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="not connected"
+        android:id="@+id/player2IPView"
+        android:singleLine="true"
+        android:layout_alignBottom="@+id/player2ImageView"
+        android:layout_toRightOf="@+id/player2ImageView"
+        android:layout_toEndOf="@+id/player2ImageView" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player1ImageView"
+        android:src="@drawable/p1hd"
+        android:layout_below="@+id/onlineButton"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/player2ImageView"
+        android:src="@drawable/p2bhd"
+        android:layout_below="@+id/player1ImageView"
+        android:layout_alignLeft="@+id/player1ImageView"
+        android:layout_alignStart="@+id/player1ImageView" />
+
 </RelativeLayout>

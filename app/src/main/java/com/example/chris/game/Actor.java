@@ -1,6 +1,9 @@
 package com.example.chris.game;
 
+import android.media.MediaPlayer;
 import android.widget.ImageView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Chris on 09/12/2015.
@@ -17,6 +20,7 @@ abstract class Actor {
     float x,y;
     int up, down, left, right;
     int speed = 2;
+    int move = 0;
     final int xBoundsMax;
     final int yBoundsMax;
     final int xBoundsMin;
@@ -24,14 +28,16 @@ abstract class Actor {
     protected boolean reachedLimits = false;
     boolean isLeft, isRight, isUp, isDown;
     Game game;
-    protected byte playerNumber;
+    ArrayList<Bullet> bullets;
+    int[] imageResources;
 
 
-    public Actor(Game game, float x, float y, byte playerNumber, int... imageResources){
+
+    public Actor(Game game, float x, float y, int... imageResources){
         this.x = x;
         this.y = y;
         this.game = game;
-        this.playerNumber = playerNumber;
+        this.imageResources = imageResources;
         spriteFrame = new ImageView(game);
         spriteFrame.setImageResource(imageResources[0]);
         spriteFrame.setX(x);
@@ -46,13 +52,15 @@ abstract class Actor {
     }
 
     abstract void collide();
+    abstract public void update();
+
 
     public void goUp(){
 
-        if(game.writer !=null){
-            game.writer.println(playerNumber + "," + UP);
-            game.writer.flush();
-        }
+//        if(game.writer !=null){
+//            game.writer.println(/*playerNumber +*/ "," + UP);
+//            game.writer.flush();
+//        }
         if(up == 0){
             down = left = right = 0;
             isDown = isLeft = isRight = false;
@@ -62,7 +70,7 @@ abstract class Actor {
             spriteFrame.setRotationY(0);
         }
         if(game.canMoveForward()){
-            speed = 2;
+
         }else{
             speed = 0;
         }
@@ -79,10 +87,10 @@ abstract class Actor {
 
         if(down == 0){
 
-            if(game.writer !=null){
-                game.writer.println(DOWN);
-                game.writer.flush();
-            }
+//            if(game.writer !=null){
+//                game.writer.println(DOWN);
+//                game.writer.flush();
+//            }
             isUp = isLeft = isRight = false;
             isDown = true;
             up = left = right = 0;
@@ -99,12 +107,12 @@ abstract class Actor {
 
     }
     public void goLeft(){
-        speed = 2;
+
         if(left == 0) {
-            if(game.writer !=null){
-                game.writer.println(LEFT);
-                game.writer.flush();
-            }
+//            if(game.writer !=null){
+//                game.writer.println(LEFT);
+//                game.writer.flush();
+//            }
             up = down = right = 0;
             isDown = isUp = isRight = false;
             isLeft = true;
@@ -120,12 +128,12 @@ abstract class Actor {
         left++;
     }
     public void goRight(){
-        speed = 2;
+
         if(right == 0) {
-            if(game.writer !=null){
-                game.writer.println(RIGHT);
-                game.writer.flush();
-            }
+//            if(game.writer !=null){
+//                game.writer.println(RIGHT);
+//                game.writer.flush();
+//            }
             up = down = left = 0;
             isDown = isLeft = isUp = false;
             isRight = true;
@@ -142,9 +150,18 @@ abstract class Actor {
     }
 
     public void shoot(){
-        if(game.writer !=null){
-            game.writer.println(SHOOT);
-            game.writer.flush();
+//        if(game.writer !=null){
+//            game.writer.println(SHOOT);
+//            game.writer.flush();
+//        }
+        if(bullets.isEmpty()) {
+            Bullet b = new Bullet(game, getX() - (game.grid + game.grid/2), getY() - (game.grid * 2), 2, R.drawable.bullet);
+            bullets.add(b);
+            b.spriteFrame.setScaleX(0.2f);
+            b.spriteFrame.setScaleY(0.2f);
+            game.rl.addView(b.spriteFrame, game.lp);
+            MediaPlayer mediaPlayer= MediaPlayer.create(game, R.raw.shoot);
+            mediaPlayer.start();
         }
     }
 
@@ -155,9 +172,20 @@ abstract class Actor {
         return spriteFrame.getY();
     }
 
-    public byte getPlayerNumber(){
-        return playerNumber;
+    protected void moveImages(){
+        //if(isLeft || isRight || isDown || isUp) {
+            if (move == 10) {
+                spriteFrame.setImageResource(imageResources[1]);
+                move = 0;
+            }
+            if (move == 0) {
+                spriteFrame.setImageResource(imageResources[0]);
+            }
+            move++;
+        //}
     }
+
+
 
     public boolean hasReachedLimits(){
         return reachedLimits;
